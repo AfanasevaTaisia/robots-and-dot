@@ -1,0 +1,373 @@
+openapi: 3.0.0
+info:
+  title: Dot Eats
+  description: API для заказа блюд через приложение
+  version: "3"
+servers:
+- url: https://virtserver.swaggerhub.com/cottoffeus/Dot_Eats/3
+  description: SwaggerHub API Auto Mocking
+paths:
+  /auth/login:
+    post:
+      tags:
+      - Технические методы метода
+      summary: Аутентификация пользователя
+      description: "Позволяет пользователю войти в систему, используя логин и пароль."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/auth_login_body'
+        required: true
+      responses:
+        "200":
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+  /orders/{orderId}/status:
+    get:
+      tags:
+      - Управление заказами
+      summary: Просмотр статуса заказа
+      description: Возвращает текущий статус указанного заказа.
+      parameters:
+      - name: orderId
+        in: path
+        description: Уникальный идентификатор заказа
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Текущий статус заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderStatus'
+        "400":
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "404":
+          description: Блюдо не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+      security:
+      - bearerAuth: []
+  /dishes/{dishId}/reviews:
+    post:
+      tags:
+      - Отзывы
+      summary: Добавление отзыва о блюде
+      description: Позволяет пользователю добавить отзыв о блюде.
+      parameters:
+      - name: dishId
+        in: path
+        description: Уникальный идентификатор блюда
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dishId_reviews_body'
+        required: true
+      responses:
+        "201":
+          description: Отзыв успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "404":
+          description: Блюдо не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+      security:
+      - bearerAuth: []
+  /orders/history:
+    get:
+      tags:
+      - Управление заказами
+      summary: Просмотр истории заказов
+      description: Возвращает историю заказов текущего пользователя.
+      parameters:
+      - name: page
+        in: query
+        description: Номер страницы для пагинации
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          default: 1
+      - name: pageSize
+        in: query
+        description: Количество записей на странице
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 10
+          type: integer
+          default: 10
+      responses:
+        "200":
+          description: История заказов пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        "400":
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+      security:
+      - bearerAuth: []
+  /orders/{orderId}/repeat:
+    post:
+      tags:
+      - Управление заказами
+      summary: Повторение заказа
+      description: Создает новый заказ на основе предыдущего заказа пользователя.
+      parameters:
+      - name: orderId
+        in: path
+        description: Уникальный идентификатор предыдущего заказа
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "201":
+          description: Заказ успешно повторен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        "400":
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "401":
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "404":
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_error'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Уникальный идентификатор заказа
+        status:
+          type: string
+          description: Текущий статус заказа
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        totalPrice:
+          type: number
+          description: Общая стоимость заказа
+          format: float
+        orderDate:
+          type: string
+          description: Дата и время создания заказа
+          format: date-time
+        deliveryDate:
+          type: string
+          description: Дата и время доставки заказа
+          format: date-time
+        deliveryAddress:
+          type: string
+          description: Адрес доставки
+        paymentMethod:
+          type: string
+          description: Используемый способ оплаты
+          enum:
+          - card
+          - ewallet
+          - sbp
+          - cash
+    OrderItem:
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: Уникальный идентификатор блюда в заказе
+        name:
+          type: string
+          description: Название блюда
+        quantity:
+          type: integer
+          description: Количество данного блюда в заказе
+        price:
+          type: number
+          description: Цена за единицу блюда
+          format: float
+    auth_login_body:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+        password:
+          type: string
+          description: Пароль пользователя
+          format: password
+    inline_response_200:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Токен доступа
+          format: JWT
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkhhcnJ5IFBvdHRlciIsImlhdCI6MTUxNjIzOTAyMn0.Jkr1iBrO9-cr7uZRYhvE8BuSXIfuPnQWuZBNBE60t14
+    orderStatus:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Номер заказа
+        status:
+          type: string
+          description: Статус заказа
+          enum:
+          - new
+          - cooking
+          - ready
+          - delivered
+    response_error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP-код ответа
+        message:
+          type: string
+          description: Краткое описание причины ошибки
+    dishId_reviews_body:
+      required:
+      - comment
+      - rating
+      - userId
+      type: object
+      properties:
+        rating:
+          maximum: 5
+          minimum: 1
+          type: integer
+          description: Рейтинг блюда от пользователя
+        comment:
+          type: string
+          description: Текстовый отзыв пользователя
+        userId:
+          type: string
+          description: Идентификатор пользователя
+    inline_response_201:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Отзыв добавлен успешно.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
