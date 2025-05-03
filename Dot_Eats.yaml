@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Dot Eats
   description: API для заказа блюд через приложение
-  version: "3"
+  version: '3'  # Используем одинарные кавычки для версии
 servers:
 - url: https://virtserver.swaggerhub.com/cottoffeus/Dot_Eats/3
   description: SwaggerHub API Auto Mocking
@@ -10,9 +10,9 @@ paths:
   /auth/login:
     post:
       tags:
-      - Технические методы метода
+      - Auth
       summary: Аутентификация пользователя
-      description: "Позволяет пользователю войти в систему, используя логин и пароль."
+      description: Позволяет пользователю войти в систему, используя логин и пароль.
       requestBody:
         content:
           application/json:
@@ -20,19 +20,19 @@ paths:
               $ref: '#/components/schemas/auth_login_body'
         required: true
       responses:
-        "200":
+        '200':
           description: Успешная аутентификация
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
-        "401":
+        '401':
           description: Неверные учетные данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "500":
+        '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
@@ -41,7 +41,7 @@ paths:
   /orders/{orderId}/status:
     get:
       tags:
-      - Управление заказами
+      - Orders
       summary: Просмотр статуса заказа
       description: Возвращает текущий статус указанного заказа.
       parameters:
@@ -54,31 +54,31 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        '200':
           description: Текущий статус заказа
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/orderStatus'
-        "400":
+        '400':
           description: Неверный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "401":
+        '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "404":
-          description: Блюдо не найдено
+        '404':
+          description: Заказ не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "500":
+        '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
@@ -89,7 +89,7 @@ paths:
   /dishes/{dishId}/reviews:
     post:
       tags:
-      - Отзывы
+      - Reviews
       summary: Добавление отзыва о блюде
       description: Позволяет пользователю добавить отзыв о блюде.
       parameters:
@@ -97,8 +97,7 @@ paths:
         in: path
         description: Уникальный идентификатор блюда
         required: true
-        style: simple
-        explode: false
+        style: simple explode: false
         schema:
           type: string
       requestBody:
@@ -108,31 +107,31 @@ paths:
               $ref: '#/components/schemas/dishId_reviews_body'
         required: true
       responses:
-        "201":
+        '201':
           description: Отзыв успешно добавлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_201'
-        "400":
+        '400':
           description: Неверный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "401":
+        '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "404":
+        '404':
           description: Блюдо не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "500":
+        '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
@@ -143,7 +142,7 @@ paths:
   /orders/history:
     get:
       tags:
-      - Управление заказами
+      - Orders
       summary: Просмотр истории заказов
       description: Возвращает историю заказов текущего пользователя.
       parameters:
@@ -168,7 +167,7 @@ paths:
           type: integer
           default: 10
       responses:
-        "200":
+        '200':
           description: История заказов пользователя
           content:
             application/json:
@@ -176,19 +175,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        "400":
+        '400':
           description: Неверный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "401":
+        '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "500":
+        '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
@@ -199,7 +198,7 @@ paths:
   /orders/{orderId}/repeat:
     post:
       tags:
-      - Управление заказами
+      - Orders
       summary: Повторение заказа
       description: Создает новый заказ на основе предыдущего заказа пользователя.
       parameters:
@@ -207,36 +206,35 @@ paths:
         in: path
         description: Уникальный идентификатор предыдущего заказа
         required: true
-        style: simple
-        explode: false
+        style: simple explode: false
         schema:
           type: string
       responses:
-        "201":
+        '201':
           description: Заказ успешно повторен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        "400":
+        '400':
           description: Неверный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "401":
+        '401':
           description: Пользователь не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "404":
+        '404':
           description: Заказ не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/response_error'
-        "500":
+        '500':
           description: Внутренняя ошибка сервера
           content:
             application/json:
@@ -297,8 +295,7 @@ components:
         price:
           type: number
           description: Цена за единицу блюда
-          format: float
-    auth_login_body:
+          format: float    auth_login_body:
       required:
       - password
       - username
